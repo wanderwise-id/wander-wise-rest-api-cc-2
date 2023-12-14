@@ -1,5 +1,5 @@
 /node_modules
 .env
-db\service-account.json
-db\ww-service-account.json
+service-account.json
+ww-service-account.json
 ```
