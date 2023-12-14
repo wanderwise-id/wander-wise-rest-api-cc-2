@@ -26,3 +26,12 @@ const resetPassword = async (req, res) => {
 const updatePassword = async (req, res) => {
   res.send('update password route');
 };
+
+module.exports = {
+  login,
+  logout,
+  register,
+  forgotPassword,
+  resetPassword,
+  updatePassword,
+};

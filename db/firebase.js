@@ -1,8 +1,8 @@
-const fireabse = require('firebase');
+const firebase = require('firebase');
 const admin = require('firebase-admin');
-const serviceAccount = require('./config/ww-service-account.json');
+const serviceAccount = require('./ww-service-account.json');
 
-const fireabseConfig = {
+const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
   authDomain: process.env.FIREBASE_AUTH_DOMAIN,
   projectId: process.env.PROJECT_ID,
@@ -23,7 +23,7 @@ const destinationsRef = db.collection('destinations');
 
 const destinationByCityRef = db.collection('cities').doc('S0ACAgkp9MZqEtk1duLW').collection('destinations');
 
-firebase.initializeApp(fireabseConfig);
+firebase.initializeApp(firebaseConfig);
 
 module.exports = {
   firebase,

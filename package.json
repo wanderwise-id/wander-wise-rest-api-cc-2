@@ -30,6 +30,7 @@
     "mongoose": "^5.13.2",
     "multer": "^1.4.4-lts.1",
     "multer-storage-cloudinary": "^4.0.0",
+    "nodemon": "^3.0.2",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "rate-limiter": "^0.2.0",

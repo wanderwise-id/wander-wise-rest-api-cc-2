@@ -13,7 +13,7 @@ const rateLimiter = require('express-rate-limit');
 // swagger
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
-const swaggerDocument = YAML.load('./');
+const swaggerDocument = YAML.load('./wander-wise-openapi3_0.yaml');
 
 global.__basedir = __dirname;
 
@@ -31,7 +31,7 @@ cloudinary.config({
 });
 
 // connect to database
-const { db } = require('./db/furebase');
+const { db } = require('./db/firebase');
 const authenticatedUser = 1;
 
 // import routers to variables
@@ -40,6 +40,7 @@ const usersRouter = require('./routes/users');
 const postsRouter = require('./routes/posts');
 const citiesRouter = require('./routes/cities');
 const destinationsRouter = require('./routes/destinations');
+const uploadRouter = require('./routes/upload');
 
 // error handler
 const isAuthenticated = require('./middleware/isAuthenticated');
@@ -83,6 +84,7 @@ app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/posts', postsRouter);
 app.use('/api/v1/cities', citiesRouter);
 app.use('/api/v1/destinations', destinationsRouter);
+app.use('/api/v1/upload', uploadRouter);
 
 // middleware action
 app.use(notFoundMiddleware);
@@ -93,7 +95,7 @@ const port = process.env.PORT || 3000;
 
 const start = async () => {
   try {
-    await db;
+    db;
     app.listen(port, () =>
     console.log(`Server is listening on port ${port}...`)
     );

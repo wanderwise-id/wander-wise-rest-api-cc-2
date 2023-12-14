@@ -1,2 +1,4 @@
-node_modules
+/node_modules
 .env
+ww-service-account.json
+oauth-secret.json
