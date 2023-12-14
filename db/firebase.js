@@ -2,6 +2,7 @@ const firebase = require('firebase');
 const admin = require('firebase-admin');
 const serviceAccount = require('./ww-service-account.json');
 
+
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
   authDomain: process.env.FIREBASE_AUTH_DOMAIN,
