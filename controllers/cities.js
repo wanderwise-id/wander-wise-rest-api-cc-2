@@ -11,7 +11,18 @@ const { BadRequestError, NotFoundError } = require('../errors');
 
 
 const getAllCities = async (req, res) => {
-  res.send('get all cities route');
+  const snapshot = await citiesRef.get();
+  const cities = [];
+  snapshot.forEach((doc) => {
+    cities.push({ id: doc.id, ...doc.data()});
+  });
+  res.status(StatusCodes.OK).json({ 
+    error: false,
+    msg: 'Success get all cities',
+    body: {
+      cities
+    },
+  });
 };
 
 const getCity = async (req, res) => {
@@ -19,7 +30,45 @@ const getCity = async (req, res) => {
 };
 
 const createCity = async (req, res) => {
-  res.send('create city route');
+const { 
+  name,
+  capital,
+  country,
+  description,
+  image,
+  area,
+  location={
+    latitude,
+    longitude,
+  },
+ } = req.body;
+
+// console.log(req.body);
+
+const citydoc = citiesRef.doc();
+// const { latitude, longitude } = location;
+
+const city = {
+  idCity  : citydoc.id,
+  name: name,
+  capital: capital,
+  country: country,
+  description: description,
+  image: image,
+  area: area,
+  location: new admin.firestore.GeoPoint(location.latitude, location.longitude),
+};
+
+
+// console.log(city);
+await citydoc.set(city);
+res.status(StatusCodes.CREATED).json({ 
+  error: false,
+  msg: 'Success create city',
+  body: {
+    city,
+    }
+  });
 };
 
 const deleteCity = async (req, res) => {

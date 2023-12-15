@@ -81,7 +81,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', usersRouter);
-app.use('/api/v1/posts', postsRouter);
+app.use('/api/v1/posts', isAuthenticated, postsRouter);
 app.use('/api/v1/cities', citiesRouter);
 app.use('/api/v1/destinations', destinationsRouter);
 app.use('/api/v1/upload', uploadRouter);
