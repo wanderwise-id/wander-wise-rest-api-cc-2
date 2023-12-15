@@ -13,13 +13,13 @@ const rateLimiter = require('express-rate-limit');
 // swagger
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
-const swaggerDocument = YAML.load('./wander-wise-openapi3_0.yaml');
+const swaggerDocument = YAML.load('./wander-wise-api-2.postman_collection-openapi3_0.yaml');
 
 global.__basedir = __dirname;
 
 var corsOptions = {
   // your server ip address here
-  origin: `http://localhost:${process.env.PORT}` || 'http://localhost:3000',
+  origin: `${process.env.URL_SERVER}:${process.env.PORT}` || 'http://localhost:3000',
 };
 
 // image upload and cloudinary storage hosting
