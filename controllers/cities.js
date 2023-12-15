@@ -26,7 +26,34 @@ const getAllCities = async (req, res) => {
 };
 
 const getCity = async (req, res) => {
-  res.send('get city route');
+  const { cityId } = req.params;
+  try {
+    const cityDoc = await citiesRef.doc(cityId).get();
+    
+    if( !cityDoc.exists ) {
+      throw new NotFoundError(`City not with id ${cityId} not found`);
+    }
+
+    const cityData = cityDoc.data();
+    const city = {
+      id: cityDoc.id,
+      ...cityData,
+    };
+
+    res.status(StatusCodes.OK).json({
+      error: false,
+      msg: `Success get city with ID ${cityId}`,
+      body: {
+        city,
+      },
+    });
+  } catch (error) {
+    res.status(StatusCodes.NOT_FOUND).json({
+      error: true,
+      msg: error.message,
+      body: null,
+    });
+  }
 };
 
 const createCity = async (req, res) => {

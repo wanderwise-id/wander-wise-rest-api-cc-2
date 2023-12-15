@@ -10,6 +10,6 @@ const {
 } = require('../controllers/cities');
 
 router.route('/').get(getAllCities).post(createCity);
-router.route('/:id').get(getCity).patch(updateCity).delete(deleteCity);
+router.route('/:cityId').get(getCity).patch(updateCity).delete(deleteCity);
 
 module.exports = router;

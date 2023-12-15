@@ -21,6 +21,7 @@ const db = admin.firestore();
 const usersRef = db.collection('users');
 const citiesRef = db.collection('cities');
 const destinationsRef = db.collection('destinations');
+const postsRef = db.collection('posts');
 
 const destinationByCityRef = db.collection('cities').doc('S0ACAgkp9MZqEtk1duLW').collection('destinations');
 
@@ -34,4 +35,5 @@ module.exports = {
   citiesRef,
   destinationsRef,
   destinationByCityRef,
+  postsRef,
 }

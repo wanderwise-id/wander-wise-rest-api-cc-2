@@ -20,9 +20,10 @@ const login = async (req, res) => {
     msg: 'Login successful',
     body: {
       uid: user.uid, 
+      name: user.displayName,
       email: user.email, 
       token: idToken, 
-      // accesstoken: user.accessToken,
+      accesstoken: user.accessToken,
       // user,
     },
    });

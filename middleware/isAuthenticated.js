@@ -1,17 +1,24 @@
-const jwt = require('jsonwebtoken');
 const { UnauthenticatedError } = require('../errors');
-const { auth } = require('firebase-admin');
+const admin = require('firebase-admin');
 
 const isAuthenticated = async (req, res, next) => {
-  if (req.session?.uid) {
-    return next();
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer')) {
+    throw new UnauthenticatedError('Authentication invalid');
   }
-  throw new UnauthenticatedError('Authentication invalid');
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    console.log('Decoded Token:', decodedToken);
+    req.user = decodedToken;
+    return next();
+  } catch (error) {
+    console.error('Firebase Authentication Error:', error);
+    throw new UnauthenticatedError('Authentication invalid');
+  }
 };
 
-const authJwt = async (req, res, next) => {
-  // check header
-  // const authHeader = req.headers.authorization;
-}
-
-module.exports = isAuthenticated, authJwt;
+module.exports = isAuthenticated;
