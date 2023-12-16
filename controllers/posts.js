@@ -15,6 +15,11 @@ const {
 
 
 const getAllPosts = async (req, res) => {
+  const userId = req.session.uid;
+  if (!userId) {
+    throw new UnauthenticatedError('You are not logged in');
+  };
+
   const snapshot = await postsRef.get();
   const posts = [];
   snapshot.forEach((doc) => {
@@ -32,6 +37,10 @@ const getAllPosts = async (req, res) => {
 
 const getAllPostsUser = async (req, res) => {
   const userId = req.session.uid;
+  if (!userId) {
+    throw new UnauthenticatedError('You are not logged in');
+  };
+  
   try {
   const snapshot = await postsRef.where("userId", "==", userId).get();
   
@@ -68,7 +77,7 @@ const getPost = async (req, res) => {
   if (!userId) {
     throw new UnauthenticatedError('You are not logged in');
   };
-  
+
   const { postId } = req.params;
   try {
     const postDoc = await postsRef.doc(postId).get();
@@ -136,6 +145,12 @@ try {
 
 
 const createPost = async (req, res) => {
+  
+  const userId = req.session.uid;
+  if (!userId) {
+    throw new UnauthenticatedError('You are not logged in');
+  };
+
   try {
     await uploadFile(req, res);
 
@@ -149,7 +164,6 @@ const createPost = async (req, res) => {
     // Delete the file from local storage after successful upload to Cloudinary
     fs.unlinkSync(req.file.path);
 
-    const userId = req.session.uid;
     const {
       title,
       caption,
