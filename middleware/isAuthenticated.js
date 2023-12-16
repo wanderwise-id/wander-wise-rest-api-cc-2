@@ -1,5 +1,5 @@
-const { UnauthenticatedError } = require('../errors');
 const admin = require('firebase-admin');
+const  { UnauthenticatedError }  = require('../errors');
 
 const isAuthenticated = async (req, res, next) => {
   const authHeader = req.headers.authorization;

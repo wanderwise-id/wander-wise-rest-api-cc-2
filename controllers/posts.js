@@ -16,10 +16,7 @@ const {
 
 const getAllPosts = async (req, res) => {
   const userId = req.session.uid;
-  if (!userId) {
-    throw new UnauthenticatedError('You are not logged in');
-  };
-
+  
   const snapshot = await postsRef.get();
   const posts = [];
   snapshot.forEach((doc) => {
@@ -37,10 +34,7 @@ const getAllPosts = async (req, res) => {
 
 const getAllPostsUser = async (req, res) => {
   const userId = req.session.uid;
-  if (!userId) {
-    throw new UnauthenticatedError('You are not logged in');
-  };
-  
+
   try {
   const snapshot = await postsRef.where("userId", "==", userId).get();
   
@@ -74,10 +68,7 @@ const getAllPostsUser = async (req, res) => {
 const getPost = async (req, res) => {
   const userId = req.session.uid;
 
-  if (!userId) {
-    throw new UnauthenticatedError('You are not logged in');
-  };
-
+  
   const { postId } = req.params;
   try {
     const postDoc = await postsRef.doc(postId).get();
@@ -145,12 +136,7 @@ try {
 
 
 const createPost = async (req, res) => {
-  
   const userId = req.session.uid;
-  if (!userId) {
-    throw new UnauthenticatedError('You are not logged in');
-  };
-
   try {
     await uploadFile(req, res);
 
