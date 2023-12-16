@@ -50,7 +50,7 @@ const register = async (req, res) => {
 
     res.status(StatusCodes.CREATED).json({
       error: false, 
-      message: 'User created',
+      msg: 'User created',
       body: {
         uid: user.uid,
         email: user.email,
