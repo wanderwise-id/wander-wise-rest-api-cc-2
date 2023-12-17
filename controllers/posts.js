@@ -11,11 +11,11 @@ const {
   const { BadRequestError, NotFoundError } = require('../errors');
   const uploadFile = require('../middleware/upload');
   const fs = require('fs');
+  const { use } = require('passport');
   const cloudinary = require('cloudinary').v2;
 
 
 const getAllPosts = async (req, res) => {
-  const userId = req.session.uid;
   
   const snapshot = await postsRef.get();
   const posts = [];
@@ -24,16 +24,20 @@ const getAllPosts = async (req, res) => {
   });
 
   res.status(StatusCodes.OK).json({
+    nbHits: posts.length,
     error: false,
     msg: 'Success get all posts',
     body: {
       posts,
-    }
+    },
   })
 };
 
 const getAllPostsUser = async (req, res) => {
-  const userId = req.session.uid;
+
+  const token = req.headers.authorization.split(' ')[1];
+  const decodedToken = await admin.auth().verifyIdToken(token);
+  const userId = decodedToken.uid;
 
   try {
   const snapshot = await postsRef.where("userId", "==", userId).get();
@@ -47,6 +51,7 @@ const getAllPostsUser = async (req, res) => {
   // .where("userId", "==", "hibQpDqjSgOJNcJ2c429rJ3uyP33")
   
   res.status(StatusCodes.OK).json({
+    nbHits: post.length,
     error: false,
     msg: 'Success get all posts',
     body: {
@@ -66,7 +71,7 @@ const getAllPostsUser = async (req, res) => {
 };
 
 const getPost = async (req, res) => {
-  const userId = req.session.uid;
+  
 
   
   const { postId } = req.params;
@@ -84,6 +89,7 @@ const getPost = async (req, res) => {
     };
 
     res.status(StatusCodes.OK).json({
+      nbHits: post.length,
       error: false,
       msg: `Success get post with ID ${postId}`,
       body: {
@@ -101,7 +107,6 @@ const getPost = async (req, res) => {
 }
 
 const createPostText = async (req, res) => {
-const userId = req.session.uid; // Get UID from Firebase auth middleware
 const { 
   title, 
   image, 
@@ -136,20 +141,24 @@ try {
 
 
 const createPost = async (req, res) => {
-  // const userId = req.session.uid;
+
+  const token = req.headers.authorization.split(' ')[1];
+  const decodedToken = await admin.auth().verifyIdToken(token);
+  const userId = decodedToken.uid;
+
   try {
     await uploadFile(req, res);
-
+    
     if (req.file == undefined) {
       return res.status(400).send({ message: "Please upload a file!" });
     }
-
+    
     // Upload the file to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path);
-
+    
     // Delete the file from local storage after successful upload to Cloudinary
     fs.unlinkSync(req.file.path);
-
+    
     const {
       title,
       caption,
@@ -163,7 +172,7 @@ const createPost = async (req, res) => {
 
     
       const post = {
-        // userId: userId,
+        userId: userId,
         idPost: postdoc.id,
         title: title,
         image: result.secure_url,
@@ -172,8 +181,9 @@ const createPost = async (req, res) => {
         // Add other post properties here
       };
       
-      await postdoc.set(post);
+    await postdoc.set(post);
       
+    delete post.userId;
     res.status(StatusCodes.CREATED).json({
       error: false,
       msg: 'Post created',
