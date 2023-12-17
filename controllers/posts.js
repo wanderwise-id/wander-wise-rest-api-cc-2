@@ -136,7 +136,7 @@ try {
 
 
 const createPost = async (req, res) => {
-  const userId = req.session.uid;
+  // const userId = req.session.uid;
   try {
     await uploadFile(req, res);
 
@@ -163,7 +163,7 @@ const createPost = async (req, res) => {
 
     
       const post = {
-        userId: userId,
+        // userId: userId,
         idPost: postdoc.id,
         title: title,
         image: result.secure_url,
