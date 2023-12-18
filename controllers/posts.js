@@ -74,9 +74,6 @@ const getAllPostsUser = async (req, res) => {
 };
 
 const getPost = async (req, res) => {
-  
-
-  
   const { postId } = req.params;
   try {
     const postDoc = await postsRef.doc(postId).get();
@@ -153,7 +150,7 @@ const createPost = async (req, res) => {
     // upload file process to req.file
     await uploadFile(req, res);
     if (req.file == undefined) {
-      return res.status(400).send({ message: "Please upload a file!" });
+      return res.status(400).send({ msg: "Please upload a file!" });
     }
     // Upload the file to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path);
@@ -198,12 +195,12 @@ const createPost = async (req, res) => {
 
     if (err.code == "LIMIT_FILE_SIZE") {
       return res.status(500).send({
-        message: "File size cannot be larger than 2MB!",
+        msg: "File size cannot be larger than 2MB!",
       });
     }
 
     res.status(500).send({
-      message: `Could not upload the file. ${err}`,
+      msg: `Could not upload the file. ${err}`,
     });
   }
 };
@@ -223,7 +220,7 @@ const deletePost = async (req, res) => {
   await postDoc.delete();
   res.status(StatusCodes.OK).json({
     error: false,
-    msg: `Post with ID ${postId} deleted`,
+    msg: `Success Delete Post with ID ${postId}`,
     body: null,
   });
 };
@@ -275,7 +272,7 @@ const updatePost = async (req, res) => {
     // upload file process to req.file
     await uploadFile(req, res);
     if (req.file == undefined) {
-      return res.status(400).send({ message: "Please upload a file!" });
+      return res.status(400).send({ msg: "Please upload a file!" });
     }
     // Upload the file to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path);
