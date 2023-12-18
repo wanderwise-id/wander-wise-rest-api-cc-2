@@ -19,7 +19,7 @@ let storageLocal = multer.diskStorage({
 let uploadFile = multer({
   storage: storageLocal,
   limits: { fileSize: maxSize },
-}).single("file");
+}).single("image");
 
 
 

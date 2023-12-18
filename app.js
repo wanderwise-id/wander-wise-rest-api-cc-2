@@ -2,6 +2,7 @@ require('dotenv').config();
 require('express-async-errors');
 const express = require('express');
 const session = require('express-session');
+const bodyParser = require('body-parser');
 const app = express();
 
 // extra security packages
@@ -58,6 +59,8 @@ app.use(
 
 
 // 
+app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./public'));
 app.use(express.json());

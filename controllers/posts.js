@@ -148,7 +148,6 @@ const createPost = async (req, res) => {
 
   try {
     await uploadFile(req, res);
-    
     if (req.file == undefined) {
       return res.status(400).send({ message: "Please upload a file!" });
     }
@@ -208,12 +207,185 @@ const createPost = async (req, res) => {
 
 
 const deletePost = async (req, res) => {
-  res.send('delete post route');
+  const token = req.headers.authorization.split(' ')[1];
+  const decodedToken = await admin.auth().verifyIdToken(token);
+  const userId = decodedToken.uid;
+  
+  const { postId } = req.params;
+  const postDoc = await postsRef.doc(postId);
+  const post = await postDoc.get();
+  if (!post.exists) {
+    throw new NotFoundError(`Post with ID ${postId} not found`);
+  }
+  await postDoc.delete();
+  res.status(StatusCodes.OK).json({
+    error: false,
+    msg: `Post with ID ${postId} deleted`,
+    body: null,
+  });
 };
 
+// const updatePost = async (req, res) => {
+//   const token = req.headers.authorization.split(' ')[1];
+//   const decodedToken = await admin.auth().verifyIdToken(token);
+//   const userId = decodedToken.uid;
+
+//   const { postId } = req.params;
+//   try {
+//     const postDoc = await postsRef.doc(postId).get();
+
+//     if( !postDoc.exists ) {
+//       throw new NotFoundError(`Post with id ${postId} not found`);
+//     }
+
+//     const postData = postDoc.data();
+//     const post = {
+//       id: postDoc.id,
+//       ...postData,
+//     };
+
+//     res.status(StatusCodes.OK).json({
+//       nbHits: post.length,
+//       error: false,
+//       msg: `Success get post with ID ${postId}`,
+//       body: {
+//         post,
+//       },
+//     });
+//   } catch (error) {
+//     res.status(StatusCodes.NOT_FOUND).json({
+//       error: true,
+//       msg: error.message,
+//       body: null,
+//     });
+//   }
+// };
+
+
 const updatePost = async (req, res) => {
-  res.send('update post route');
+  const token = req.headers.authorization.split(' ')[1];
+  const decodedToken = await admin.auth().verifyIdToken(token);
+  const userId = decodedToken.uid;
+
+  const { postId } = req.params;
+  const { title, caption } = req.body;
+
+  try {
+    const postDoc = await postsRef.doc(postId).get();
+
+    if (!postDoc.exists) {
+      throw new NotFoundError(`Post with id ${postId} not found`);
+    }
+
+    const postData = postDoc.data();
+
+    // Check if the user making the request is the owner of the post
+    if (postData.userId !== userId) {
+      return res.status(StatusCodes.FORBIDDEN).json({
+        error: true,
+        msg: 'Permission denied. You are not the owner of this post.',
+        body: null,
+      });
+    }
+
+    // Update the post data
+    await postsRef.doc(postId).update({
+      title: title || postData.title,
+      caption: caption || postData.caption,
+      updatedAt: admin.firestore.Timestamp.fromDate(new Date()),
+      // Add other fields to update here
+    });
+
+    const updatedPostDoc = await postsRef.doc(postId).get();
+    const updatedPostData = updatedPostDoc.data();
+
+    res.status(StatusCodes.OK).json({
+      error: false,
+      msg: `Post with ID ${postId} successfully updated`,
+      body: {
+        post: {
+          id: updatedPostDoc.id,
+          ...updatedPostData,
+        },
+      },
+    });
+  } catch (error) {
+    res.status(StatusCodes.NOT_FOUND).json({
+      error: true,
+      msg: error.message,
+      body: null,
+    });
+  }
 };
+
+
+
+// const updatePost = async (req, res) => {
+//   const token = req.headers.authorization.split(' ')[1];
+//   const decodedToken = await admin.auth().verifyIdToken(token);
+//   const userId = decodedToken.uid;
+
+//   const { postId } = req.params;
+//   const { title, caption } = req.body;
+
+//   try {
+//     const postDoc = await postsRef.doc(postId).get();
+
+//     if (!postDoc.exists) {
+//       throw new NotFoundError(`Post with id ${postId} not found`);
+//     }
+
+//     const postData = postDoc.data();
+
+//     // Check if the user making the request is the owner of the post
+//     if (postData.userId !== userId) {
+//       return res.status(StatusCodes.FORBIDDEN).json({
+//         error: true,
+//         msg: 'Permission denied. You are not the owner of this post.',
+//         body: null,
+//       });
+//     }
+
+//     // Upload new image if provided
+//     let newImageUrl = postData.image;
+//     if (req.file) {
+//       await cloudinary.uploader.destroy(postData.public_id); // Remove old image from Cloudinary
+//       const newImageResult = await cloudinary.uploader.upload(req.file.path);
+//       newImageUrl = newImageResult.secure_url;
+//       fs.unlinkSync(req.file.path); // Delete the file from local storage
+//     }
+
+//     // Update the post data, including the image URL
+//     await postsRef.doc(postId).update({
+//       title: title || postData.title,
+//       caption: caption || postData.caption,
+//       image: newImageUrl,
+//       updatedAt: admin.firestore.Timestamp.fromDate(new Date()),
+//       // Add other fields to update here
+//     });
+
+//     const updatedPostDoc = await postsRef.doc(postId).get();
+//     const updatedPostData = updatedPostDoc.data();
+
+//     res.status(StatusCodes.OK).json({
+//       error: false,
+//       msg: `Post with ID ${postId} successfully updated`,
+//       body: {
+//         post: {
+//           id: updatedPostDoc.id,
+//           ...updatedPostData,
+//         },
+//       },
+//     });
+//   } catch (error) {
+//     res.status(StatusCodes.NOT_FOUND).json({
+//       error: true,
+//       msg: error.message,
+//       body: null,
+//     });
+//   }
+// };
+
 
 module.exports = {
   getAllPosts,
