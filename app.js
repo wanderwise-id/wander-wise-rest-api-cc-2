@@ -17,7 +17,7 @@ const rateLimiter = require('express-rate-limit');
 // swagger
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
-const swaggerDocument = YAML.load('./wander-wise-api-2.postman_collection-openapi3_0.yaml');
+const swaggerDocument = YAML.load('./wander-wise-api-2-1.postman_collection.yaml');
 
 global.__basedir = __dirname;
 
