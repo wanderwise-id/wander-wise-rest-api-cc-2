@@ -23,16 +23,18 @@ let uploadFile = multer({
 
 
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'uploads', // Specify the Cloudinary folder where you want to store files
-    format: async (req, file) => 'png,jgp,jpeg,JPG,JPEG,PNG', // Set the desired format (you can adjust this based on file type)
-  },
-});
+// const storage = new CloudinaryStorage({
+//   cloudinary: cloudinary,
+//   params: {
+//     folder: 'uploads', // Specify the Cloudinary folder where you want to store files
+//     format: async (req, file) => 'png,jgp,jpeg,JPG,JPEG,PNG', // Set the desired format (you can adjust this based on file type)
+//   },
+// });
 
-const upload = multer({ storage: storage }).single('file');
+// const upload = multer({ storage: storage }).single('file');
 
 
 let uploadFileMiddleware = util.promisify(uploadFile);
-module.exports = uploadFileMiddleware, upload;
+module.exports = 
+uploadFileMiddleware;
+// upload;

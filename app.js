@@ -4,6 +4,9 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
+// const multer = require('multer');
+// const multerStorage = multer.memoryStorage();
+// const upload = multer({ storage: multerStorage });
 
 // extra security packages
 const helmet = require('helmet');
@@ -59,11 +62,11 @@ app.use(
 
 
 // 
-app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./public'));
 app.use(express.json());
+// app.use(upload.single());
 app.use(helmet());
 app.use(cors(corsOptions));
 app.use(xss());

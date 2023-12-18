@@ -44,8 +44,11 @@ const getAllPostsUser = async (req, res) => {
   
   const post = [];
   snapshot.forEach((doc) => {
-    post.push({ id: doc.id, ...doc.data()});
+    post.push({ 
+      id: doc.id, ...doc.data(),
+    });
   });
+
     
   // .collection("posts")
   // .where("userId", "==", "hibQpDqjSgOJNcJ2c429rJ3uyP33")
@@ -147,16 +150,16 @@ const createPost = async (req, res) => {
   const userId = decodedToken.uid;
 
   try {
+    // upload file process to req.file
     await uploadFile(req, res);
     if (req.file == undefined) {
       return res.status(400).send({ message: "Please upload a file!" });
     }
-    
     // Upload the file to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path);
-    
     // Delete the file from local storage after successful upload to Cloudinary
     fs.unlinkSync(req.file.path);
+    //end upload file process to req.file
     
     const {
       title,
@@ -191,7 +194,7 @@ const createPost = async (req, res) => {
       },
     });
   } catch (err) {
-    console.log(err);
+    // console.log(err);
 
     if (err.code == "LIMIT_FILE_SIZE") {
       return res.status(500).send({
@@ -268,47 +271,67 @@ const updatePost = async (req, res) => {
   const userId = decodedToken.uid;
 
   const { postId } = req.params;
-  const { title, caption } = req.body;
-
   try {
-    const postDoc = await postsRef.doc(postId).get();
-
-    if (!postDoc.exists) {
-      throw new NotFoundError(`Post with id ${postId} not found`);
+    // upload file process to req.file
+    await uploadFile(req, res);
+    if (req.file == undefined) {
+      return res.status(400).send({ message: "Please upload a file!" });
     }
+    // Upload the file to Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path);
+    // Delete the file from local storage after successful upload to Cloudinary
+    fs.unlinkSync(req.file.path);
+    //end upload file process to req.file
 
-    const postData = postDoc.data();
-
-    // Check if the user making the request is the owner of the post
-    if (postData.userId !== userId) {
-      return res.status(StatusCodes.FORBIDDEN).json({
-        error: true,
-        msg: 'Permission denied. You are not the owner of this post.',
-        body: null,
-      });
+    const { 
+      title, 
+      caption 
+    } = req.body;
+    // console.log(req.body);
+    
+    
+    const postDoc = postsRef.doc(postId);
+    const post = await postDoc.get();
+    const postData = post.data();
+    
+    
+    if (!post.exists) {
+      throw new NotFoundError(`Post with ID ${postId} not found`);
     }
-
-    // Update the post data
-    await postsRef.doc(postId).update({
-      title: title || postData.title,
-      caption: caption || postData.caption,
-      updatedAt: admin.firestore.Timestamp.fromDate(new Date()),
-      // Add other fields to update here
-    });
-
-    const updatedPostDoc = await postsRef.doc(postId).get();
-    const updatedPostData = updatedPostDoc.data();
-
+    
+    const tmpTitle = postData.title;
+    const tmpCaption = postData.caption;
+    const tmpImage = postData.image;
+    
+    // check request body is empty or not
+    
+    
+    const newData = {
+      title: title || tmpTitle,
+      caption: caption || tmpCaption,
+      image: result.secure_url || tmpImage,
+    };
+    
+    // console.log(newData);
+    
+    try {
+      await postDoc.update(newData);
+    } catch (error) {
+      res.status(StatusCodes.NOT_FOUND).json({ msg: error.message });
+    }
+  
     res.status(StatusCodes.OK).json({
       error: false,
       msg: `Post with ID ${postId} successfully updated`,
       body: {
         post: {
-          id: updatedPostDoc.id,
-          ...updatedPostData,
+          title: newData.title,
+          caption: newData.caption,
+          image: newData.image,
         },
       },
     });
+
   } catch (error) {
     res.status(StatusCodes.NOT_FOUND).json({
       error: true,
@@ -316,6 +339,7 @@ const updatePost = async (req, res) => {
       body: null,
     });
   }
+  
 };
 
 
