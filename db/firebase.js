@@ -22,6 +22,7 @@ const usersRef = db.collection('users');
 const citiesRef = db.collection('cities');
 const destinationsRef = db.collection('destinations');
 const postsRef = db.collection('posts');
+const likesRef = db.collection('likes');
 
 const destinationByCityRef = db.collection('cities').doc('S0ACAgkp9MZqEtk1duLW').collection('destinations');
 
@@ -36,4 +37,5 @@ module.exports = {
   destinationsRef,
   destinationByCityRef,
   postsRef,
+  likesRef,
 }

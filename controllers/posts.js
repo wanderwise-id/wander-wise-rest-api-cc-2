@@ -5,13 +5,16 @@ const {
   citiesRef, 
   destinationsRef, 
   destinationByCityRef,
-  postsRef } = require('../db/firebase');
+  postsRef,
+  likesRef,
+ } = require('../db/firebase');
 
   const { StatusCodes } = require('http-status-codes');
   const { BadRequestError, NotFoundError } = require('../errors');
   const uploadFile = require('../middleware/upload');
   const fs = require('fs');
   const { use } = require('passport');
+const { log } = require('console');
   const cloudinary = require('cloudinary').v2;
 
 
@@ -159,11 +162,12 @@ const createPost = async (req, res) => {
     //end upload file process to req.file
     
     const {
-      title,
+      // title,
       caption,
+      city,
     } = req.body;
 
-    if (!title || !caption) {
+    if (!city || !caption) {
       return res.status(400).json({ error: true, msg: 'Title and caption are required.' });
     }
 
@@ -173,7 +177,8 @@ const createPost = async (req, res) => {
       const post = {
         userId: userId,
         idPost: postdoc.id,
-        title: title,
+        // title: title,
+        city: city,
         image: result.secure_url,
         caption: caption,
         createdAt: admin.firestore.Timestamp.fromDate(new Date()),
@@ -225,41 +230,6 @@ const deletePost = async (req, res) => {
   });
 };
 
-// const updatePost = async (req, res) => {
-//   const token = req.headers.authorization.split(' ')[1];
-//   const decodedToken = await admin.auth().verifyIdToken(token);
-//   const userId = decodedToken.uid;
-
-//   const { postId } = req.params;
-//   try {
-//     const postDoc = await postsRef.doc(postId).get();
-
-//     if( !postDoc.exists ) {
-//       throw new NotFoundError(`Post with id ${postId} not found`);
-//     }
-
-//     const postData = postDoc.data();
-//     const post = {
-//       id: postDoc.id,
-//       ...postData,
-//     };
-
-//     res.status(StatusCodes.OK).json({
-//       nbHits: post.length,
-//       error: false,
-//       msg: `Success get post with ID ${postId}`,
-//       body: {
-//         post,
-//       },
-//     });
-//   } catch (error) {
-//     res.status(StatusCodes.NOT_FOUND).json({
-//       error: true,
-//       msg: error.message,
-//       body: null,
-//     });
-//   }
-// };
 
 
 const updatePost = async (req, res) => {
@@ -281,8 +251,9 @@ const updatePost = async (req, res) => {
     //end upload file process to req.file
 
     const { 
-      title, 
-      caption 
+      // title, 
+      caption,
+      city,
     } = req.body;
     // console.log(req.body);
     
@@ -297,14 +268,16 @@ const updatePost = async (req, res) => {
     }
     
     const tmpTitle = postData.title;
-    const tmpCaption = postData.caption;
+    // const tmpCaption = postData.caption;
+    const tmpCity = postData.city;
     const tmpImage = postData.image;
     
     // check request body is empty or not
     
     
     const newData = {
-      title: title || tmpTitle,
+      // title: title || tmpTitle,
+      city: city || tmpCity,
       caption: caption || tmpCaption,
       image: result.secure_url || tmpImage,
     };
@@ -322,7 +295,8 @@ const updatePost = async (req, res) => {
       msg: `Post with ID ${postId} successfully updated`,
       body: {
         post: {
-          title: newData.title,
+          // title: newData.title,
+          city: newData.city,
           caption: newData.caption,
           image: newData.image,
         },
@@ -340,72 +314,50 @@ const updatePost = async (req, res) => {
 };
 
 
+// # Count some docs via a query
+// any_query = db.collection("foo").where("myField", "==", 0)
+// count_query = simple_query.count()
+// query_result = count_query.get()
+// print("Nb docs in query:", query_result[0][0].value)
 
-// const updatePost = async (req, res) => {
-//   const token = req.headers.authorization.split(' ')[1];
-//   const decodedToken = await admin.auth().verifyIdToken(token);
-//   const userId = decodedToken.uid;
 
-//   const { postId } = req.params;
-//   const { title, caption } = req.body;
+const countLike = async (req, res) => {
+  const { postId } = req.params;
+  try {
+    const likeDoc = await likesRef.where("postId", "==", postId);
+    const likeQuery = likeDoc.count();
+    const likeResult = likeQuery.get();
+    console.log(likeResult);
 
-//   try {
-//     const postDoc = await postsRef.doc(postId).get();
+    
+    console.log(likeDoc);
+    if (!likeDoc.exists) {
+      throw new NotFoundError(`Post with ID ${postId} not found`);
+    }
 
-//     if (!postDoc.exists) {
-//       throw new NotFoundError(`Post with id ${postId} not found`);
-//     }
+    const likeCount = likeDoc.data();
+    const like = {
+      likeCount
+    };
 
-//     const postData = postDoc.data();
+    res.status(StatusCodes.OK).json({
+      error: false,
+      msg: `Success get like with Id ${postId}`,
+      body: {
+        like,
+      }
+    })
+  } catch (error) {
+    res.status(StatusCodes.NOT_FOUND).json({
+      error: true,
+      msg: error.message,
+      body: null,
+    });
+  }
+};
 
-//     // Check if the user making the request is the owner of the post
-//     if (postData.userId !== userId) {
-//       return res.status(StatusCodes.FORBIDDEN).json({
-//         error: true,
-//         msg: 'Permission denied. You are not the owner of this post.',
-//         body: null,
-//       });
-//     }
-
-//     // Upload new image if provided
-//     let newImageUrl = postData.image;
-//     if (req.file) {
-//       await cloudinary.uploader.destroy(postData.public_id); // Remove old image from Cloudinary
-//       const newImageResult = await cloudinary.uploader.upload(req.file.path);
-//       newImageUrl = newImageResult.secure_url;
-//       fs.unlinkSync(req.file.path); // Delete the file from local storage
-//     }
-
-//     // Update the post data, including the image URL
-//     await postsRef.doc(postId).update({
-//       title: title || postData.title,
-//       caption: caption || postData.caption,
-//       image: newImageUrl,
-//       updatedAt: admin.firestore.Timestamp.fromDate(new Date()),
-//       // Add other fields to update here
-//     });
-
-//     const updatedPostDoc = await postsRef.doc(postId).get();
-//     const updatedPostData = updatedPostDoc.data();
-
-//     res.status(StatusCodes.OK).json({
-//       error: false,
-//       msg: `Post with ID ${postId} successfully updated`,
-//       body: {
-//         post: {
-//           id: updatedPostDoc.id,
-//           ...updatedPostData,
-//         },
-//       },
-//     });
-//   } catch (error) {
-//     res.status(StatusCodes.NOT_FOUND).json({
-//       error: true,
-//       msg: error.message,
-//       body: null,
-//     });
-//   }
-// };
+const addLike = async (req, res) => {};
+const deleteLike = async (req, res) => {};
 
 
 module.exports = {
@@ -416,4 +368,7 @@ module.exports = {
   createPostText,
   deletePost,
   updatePost,
+  addLike,
+  deleteLike,
+  countLike,
 };
