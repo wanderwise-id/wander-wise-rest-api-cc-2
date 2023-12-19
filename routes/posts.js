@@ -18,7 +18,7 @@ const {
 router.route('/home').get(getAllPosts);
 router.route('/').get(getAllPostsUser).post(createPost);
 router.route('/uploadpost').post(createPostText);
-router.route('/:postId').get(getPost).patch(updatePost).delete(deletePost);
+router.route('/:postId').get(getPost).put(updatePost).delete(deletePost);
 router.route('/likes/:postId').get(countLike)
 // router.route('/likes/:postId').post(addLike).delete(deleteLike);
 

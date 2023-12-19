@@ -112,7 +112,7 @@ const fetchUser = async (req, res) => {
         uid: tmpUid,
         name: tmpName,
         email: tmpEmail,
-        phone: tmpPhone,
+        // phone: tmpPhone,
         photo: tmpPhoto,
         // userRecord,
       }
@@ -144,7 +144,7 @@ const updateUser = async (req, res) => {
     const { 
       name, 
       email, 
-      phone
+      // phone
      } = req.body;
 
     const userRecord = await admin.auth().getUser(userId);
@@ -153,7 +153,7 @@ const updateUser = async (req, res) => {
     const tmpUid = userRecord.uid;
     const tmpName = userRecord.displayName;
     const tmpEmail = userRecord.email;
-    const tmpPhone = userRecord.phoneNumber;
+    // const tmpPhone = userRecord.phoneNumber;
     const tmpPhoto = userRecord.photoURL;
 
      try {
@@ -161,7 +161,7 @@ const updateUser = async (req, res) => {
        const newData = await admin.auth().updateUser(userId, {
          displayName: name || tmpName,
          email: email || tmpEmail,
-         phoneNumber: phone || tmpPhone,
+        //  phoneNumber: phone || tmpPhone,
          photoURL: result.secure_url || tmpPhoto,
        });
    
@@ -175,7 +175,7 @@ const updateUser = async (req, res) => {
            // uid: userRecord.uid,
            name: newData.displayName,
            email: newData.email,
-           phone: newData.phoneNumber,
+          //  phone: newData.phoneNumber,
            photo: newData.photoURL,
          }
        });

@@ -19,6 +19,6 @@ router.route('/register').post(register);
 router.route('/forgotpassword').post(forgotPassword);
 router.route('/resetpassword/:resettoken').patch(resetPassword);
 router.route('/updatepassword').patch(updatePassword);
-router.route('/user').get(fetchUser).patch(updateUser).delete(deleteUser);
+router.route('/user').get(fetchUser).put(updateUser).delete(deleteUser);
 
 module.exports = router;
