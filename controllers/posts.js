@@ -41,6 +41,8 @@ const getAllPostsUser = async (req, res) => {
   const token = req.headers.authorization.split(' ')[1];
   const decodedToken = await admin.auth().verifyIdToken(token);
   const userId = decodedToken.uid;
+  const userName = decodedToken.name;
+  // console.log(`username anda adalah: ${userName}`);
 
   try {
   const snapshot = await postsRef.where("userId", "==", userId).get();
@@ -148,6 +150,7 @@ const createPost = async (req, res) => {
   const token = req.headers.authorization.split(' ')[1];
   const decodedToken = await admin.auth().verifyIdToken(token);
   const userId = decodedToken.uid;
+  const userName = decodedToken.name;
 
   try {
     // upload file process to req.file
@@ -177,6 +180,7 @@ const createPost = async (req, res) => {
       const post = {
         userId: userId,
         idPost: postdoc.id,
+        name: userName,
         // title: title,
         city: city,
         image: result.secure_url,
@@ -236,6 +240,7 @@ const updatePost = async (req, res) => {
   const token = req.headers.authorization.split(' ')[1];
   const decodedToken = await admin.auth().verifyIdToken(token);
   const userId = decodedToken.uid;
+  const userName = decodedToken.name;
 
   const { postId } = req.params;
   try {
