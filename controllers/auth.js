@@ -8,6 +8,8 @@ const { BadRequestError, UnauthenticatedError } = require('../errors');
 const errorHandlerMiddleware = require('../middleware/error-handler');
 const uploadFile = require('../middleware/upload');
 const fs = require('fs');
+const { log } = require('console');
+const { defaultMaxListeners } = require('events');
 const cloudinary = require('cloudinary').v2;
 
 const login = async (req, res) => {
@@ -49,17 +51,21 @@ const logout = async (req, res) => {
 
 const register = async (req, res) => {
   const { email, password, username } = req.body;
+  const defaultPhoto = `https://res.cloudinary.com/dwqqrl18b/image/upload/v1703091596/uz1wpw5ipikfsfpkh5dd.jpg`;
+  // console.log(defaultPhoto);
   try {
     const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
     const user = userCredential.user;
     await user.updateProfile({ displayName: username });
+    await user.updateProfile({ photoURL: defaultPhoto });
     req.session.uid = user.uid;
-
+    
     const tmpUid = user.uid;
     const tmpName = user.displayName;
     const tmpEmail = user.email;
-    const tmpPhone = user.phoneNumber;
+    // const tmpPhone = user.phoneNumber;
     const tmpPhoto = user.photoURL;
+    // user.photoURL = defaultPhoto;
 
     const userDoc = usersRef.doc();
 
@@ -67,7 +73,7 @@ const register = async (req, res) => {
       idUser: tmpUid,
       name: tmpName,
       email: tmpEmail,
-      phone: tmpPhone,
+      // phone: tmpPhone,
       photo: tmpPhoto,
     };
 
@@ -81,6 +87,7 @@ const register = async (req, res) => {
         uid: user.uid,
         email: user.email,
         username: user.displayName,
+        photo: user.photoURL,
         // user,
         },
       });
