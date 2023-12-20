@@ -151,6 +151,7 @@ const createPost = async (req, res) => {
   const decodedToken = await admin.auth().verifyIdToken(token);
   const userId = decodedToken.uid;
   const userName = decodedToken.name;
+  const userPhoto = decodedToken.picture;
 
   try {
     // upload file process to req.file
@@ -181,6 +182,7 @@ const createPost = async (req, res) => {
         userId: userId,
         idPost: postdoc.id,
         name: userName,
+        photo: userPhoto,
         // title: title,
         city: city,
         image: result.secure_url,
