@@ -196,6 +196,98 @@ const updateUser = async (req, res) => {
   }
 };
 
+
+const updateUserName = async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const decodedToken = await admin.auth().verifyIdToken(token);
+  const userId = decodedToken.uid;
+
+  try {
+    const { 
+      name, 
+     } = req.body;
+
+    const userRecord = await admin.auth().getUser(userId);
+    console.log('Successfully fetched user data:', userRecord.toJSON());
+
+    const tmpUid = userRecord.uid;
+    const tmpName = userRecord.displayName;
+
+    console.log(tmpName);
+    console.log(name);
+
+     try {
+      
+       const newData = await admin.auth().updateUser(userId, {
+         displayName: name || tmpName,
+       });
+   
+       console.log(newData);
+   
+       console.log('Successfully updated user', newData.toJSON());
+       res.status(StatusCodes.OK).json({
+         error: false,
+         msg: `Success update user with ID ${userId}`,
+         body: {
+           name: newData.displayName,
+         }
+       });
+     } catch (error) {
+        console.error('Error updating user:', error);
+        throw error;
+     }
+  } catch (error) {
+    console.error('Error updating user:', error);
+    throw error;
+  }
+};
+
+const updateUserEmail = async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const decodedToken = await admin.auth().verifyIdToken(token);
+  const userId = decodedToken.uid;
+  
+  try {
+    const { 
+      email, 
+     } = req.body;
+
+    const userRecord = await admin.auth().getUser(userId);
+    console.log('Successfully fetched user data:', userRecord.toJSON());
+
+    const tmpUid = userRecord.uid;
+    const tmpEmail = userRecord.email;
+
+    console.log(tmpEmail);
+    console.log(email);
+
+     try {
+      
+       const newData = await admin.auth().updateUser(userId, {
+         email: email || tmpEmail,
+       });
+   
+       console.log(newData);
+   
+       console.log('Successfully updated user', newData.toJSON());
+       res.status(StatusCodes.OK).json({
+         error: false,
+         msg: `Success update user with ID ${userId}`,
+         body: {
+          //  name: newData.displayName,
+           email: newData.email,
+         }
+       });
+     } catch (error) {
+        console.error('Error updating user:', error);
+        throw error;
+     }
+  } catch (error) {
+    console.error('Error updating user:', error);
+    throw error;
+  }
+};
+
 const forgotPassword = async (req, res) => {
   res.send('forgot password route');
 };
@@ -250,5 +342,7 @@ module.exports = {
   updatePassword,
   fetchUser,
   updateUser,
+  updateUserName,
+  updateUserEmail,
   deleteUser,
 };

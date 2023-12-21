@@ -63,7 +63,7 @@ The service available:
   <img src="" alt="wanderwise-logo" />
 </p>
 
-# Authentications
+# Authentication
 
 This service is using firebase authentication to managing user function, firebase authentication store user data including uid, displayname, photourl, email, phone number, refresh token, and access token. With this feature we don't need to store user data to database.
 
@@ -105,7 +105,32 @@ In order to run this project, you need to follow this set-up steps:
 
 #### DOWNLOAD SERVICE ACCOUNT JSON
 * in project settings https://console.firebase.google.com
-* go to service accounts > generate new private key
+* go to service accounts > generate new private key and you will automatically download service-account.json
+* move service-account.json to db folder
+* in `firebase.js` , change `const serviceAccount = require('./ww-service-account.json');` to your filename service account you download before
+* save file
+* done
+
+#### GENERATE SECRET KEY FOR EXPRESS SESSION
+* go to `.env` file
+* write this to your `.env`
+```bash
+# secret session key
+  SESSION_SECRET= your_session_secret_key
+```
+* you can use just random number
+* save > done
+
+### CLOUDINARY FILE SERVER SET-UP
+* go to https://cloudinary.com/ and sign up
+* go to settings > access keys
+* copy this settings to `.env` file
+```bash
+  CLOUD_NAME= your_cloudinary_id_name
+  CLOUD_API_KEY= your_cloudinary_api_key
+  CLOUD_API_SECRET= your_cloudinary_api_secret
+```
+* replace the variable with your cloudinary keys
 
 # Known Issues
 
