@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="" alt="wanderwise-logo" height="300" />
+  <img src="/public/img/wander-wise-banner-b.jpg" alt="wanderwise-logo" height="300" />
 </p>
 
 <h1 align="center">WanderWise</h1>
@@ -12,6 +12,8 @@ WanderWise
 # DOCUMENTATION
 
 > Base url of this service is: https://wander-wise-rest-api-cc-2-7mqffet5fa-as.a.run.app/api/v1
+
+> REST API full documentation is here: https://wander-wise-rest-api-cc-2-7mqffet5fa-as.a.run.app/api-docs/
 
 The service available:
 ## AUTH
