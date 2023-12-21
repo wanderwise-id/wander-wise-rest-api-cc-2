@@ -127,7 +127,7 @@ In order to run this project, you need to follow this set-up steps:
 * you can use just random number
 * save > done
 
-### CLOUDINARY FILE SERVER SET-UP
+#### CLOUDINARY FILE SERVER SET-UP
 * go to https://cloudinary.com/ and sign up
 * go to settings > access keys
 * copy this settings to `.env` file
@@ -138,6 +138,11 @@ In order to run this project, you need to follow this set-up steps:
 ```
 * replace the variable with your cloudinary keys
 * save > done
+
+#### RUNNING SERVER
+* Start server with nodemon `npm run test`
+* Start server with node `npm run start`
+
 
 # Known Issues
 
