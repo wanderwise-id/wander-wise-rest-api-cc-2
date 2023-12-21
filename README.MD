@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/public/img/wander-wise-banner-b.jpg" alt="wanderwise-logo" height="300" />
+  <img src="/public/img/wander-wise-banner-b-anamorphic.jpg" alt="wanderwise-logo" height="300" />
 </p>
 
 <h1 align="center">WanderWise</h1>
