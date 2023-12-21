@@ -33,6 +33,12 @@ The service available:
 - Update Data User
   <pre>PUT /auth/user</pre>
 
+- Update Username User
+  <pre>PUT /auth/username</pre>
+
+- Update Email User
+  <pre>PUT /auth/useremail</pre>
+
 ## POSTS
 
 - Get All Posts
@@ -60,7 +66,7 @@ The service available:
 ## Architecture
 
 <p align="center">
-  <img src="" alt="wanderwise-logo" />
+  <img src="/public/img/wander-wise-architecture.jpg" alt="wanderwise-logo" />
 </p>
 
 # Authentication
@@ -113,7 +119,7 @@ In order to run this project, you need to follow this set-up steps:
 
 #### GENERATE SECRET KEY FOR EXPRESS SESSION
 * go to `.env` file
-* write this to your `.env`
+* copy this code below to your `.env`
 ```bash
 # secret session key
   SESSION_SECRET= your_session_secret_key
@@ -131,10 +137,12 @@ In order to run this project, you need to follow this set-up steps:
   CLOUD_API_SECRET= your_cloudinary_api_secret
 ```
 * replace the variable with your cloudinary keys
+* save > done
 
 # Known Issues
 
-- 
+* count likes where post is not specify by postId, if we have already login, we can take uid from decoded token. In this case, the idea is get all posts and count how many likes where postId is equal as idPost. WITHOUT using postId paramater like getPost by postId.
+The alternative is, we need to target post with postId, and from that, we can count how many likes post they have. So in posts document, they have sub-collection likes.
 
 # Pull Requests
 
